@@ -12,17 +12,15 @@ public class Obstacles {
     public int dy;
     public Rectangle rec;
     public Image pic;
-    public int hits;
 
+    public Obstacles (int pXpos, int pYpos, int dxParameter, int dyParameter, Image picParameter){
 
-    public Obstacles (int dxParameter, int dyParameter, Image picParameter){
-
-        xpos = 300;
-        ypos = 200;
+        xpos = pXpos;
+        ypos = pYpos;
         width = 50;
         height = 50;
         dx=dxParameter;
-        dy=dyParameter;
+        dy=0;
         pic = picParameter;
         isAlive = true;
         rec=new Rectangle(xpos, ypos, width, height);
@@ -30,7 +28,14 @@ public class Obstacles {
 
     }
 
-    public void move (){}
+    public void move (){
+//        balloon = new int[200];
+//
+//        for (int i = 0; i < balloon.length; i++) {
+//            balloon[i] = (int) (Math.random() * 100);
+//        }
+
+        }
 
 
-}
+    }

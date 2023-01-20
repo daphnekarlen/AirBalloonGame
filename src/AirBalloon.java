@@ -35,8 +35,11 @@ public class AirBalloon {
     }
 
     public void move () {
-        xpos= xpos+dx;
+        xpos = xpos+dx;
+        System.out.println("dx = " + dx);
         ypos = ypos+dy;
+
+        rec=new Rectangle(xpos, ypos, width, height);
 
     }
 

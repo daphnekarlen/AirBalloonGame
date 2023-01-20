@@ -5,7 +5,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
-import java.awt.image.ImageObserver;
 
 public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
@@ -17,6 +16,16 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
     public JFrame frame;
     public Canvas canvas;
     public JPanel panel;
+    public Obstacles[] balloon;
+    public BufferStrategy bufferStrategy;
+    public AirBalloon airBalloon;
+
+    public Image airBalloonPic;
+    public Image balloonPic;
+
+    public Image backgroundPic;
+
+
 
     public static void main(String[] args) {
         BalloonWorld myGame = new BalloonWorld ();
@@ -29,12 +38,26 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
         canvas.addKeyListener(this);
         canvas.addMouseListener(this);
 
+        airBalloonPic = Toolkit.getDefaultToolkit().getImage("airballoon.png");
+        airBalloon = new AirBalloon(0,0,airBalloonPic);
+
+        balloonPic = Toolkit.getDefaultToolkit().getImage("balloonobstacle.png");
+        balloon = new Obstacles[10000];
+        for(int x=0; x<balloon.length; x++){
+            balloon[x] = new Obstacles( (int)(Math.random()*1000),700, 0,0, balloonPic);
+        }
+
+        backgroundPic = Toolkit.getDefaultToolkit().getImage("mountain.jpeg");
 
     }
+
+
+
 
     public void run(){
         while(true){
             moveThings();
+            triggerBalloon();
             checkIntersections();
             render();
             pause(20);
@@ -43,34 +66,47 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
     }
 
 
+
     public void moveThings(){
         airBalloon.move();
-        balloon1.move();
-        balloon2.move();
-        balloon3.move();
-        balloon4.move();
-        balloon5.move();
-        balloon6.move();
+    }
 
+    public void triggerBalloon(){
+        for(int x=0; x<balloon.length; x++){
+          if(balloon[x].isAlive == false){
+              double r = Math.random();
+              if(r>0.99){
+                  balloon[x].isAlive = true;
+                  balloon[x].dy = -10;
+              }
+          }
+
+
+        }
     }
 
 
-    public BufferStrategy bufferStrategy;
 
-    public AirBalloon airBalloon;
-    public Obstacles balloon1;
-    public Obstacles balloon2;
-    public Obstacles balloon3;
-    public Obstacles balloon4;
-    public Obstacles balloon5;
-    public Obstacles balloon6;
+    public void checkIntersections(){
+        for(int x=0; x<balloon.length; x++){
+            if(balloon[x].rec.intersects(airBalloon.rec)) {
+                balloon[x].isAlive = false;
+            }
+        }
 
 
-    public void checkIntersections(){}
+    }
 
     public void render(){
         Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
         g.clearRect(0, 0, WIDTH, HEIGHT);
+
+        g.drawImage(backgroundPic, 0,0,WIDTH, HEIGHT, null);
+        g.drawImage(airBalloonPic, airBalloon.xpos, airBalloon.ypos, 200, 200, null);
+
+        for(int x=0; x<balloon.length; x++) {
+            g.drawImage(balloon[x].pic, balloon[x].xpos, balloon[x].ypos, balloon[x].width, balloon[x].height, null);
+        }
 
 
         g.dispose();
@@ -78,15 +114,60 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(KeyEvent event) {
 
     }
 
-    public void keyPressed(KeyEvent event) {}
+    public void keyPressed(KeyEvent event) {
+        char key = event.getKeyChar();     //gets the character of the key pressed
+        int keyCode = event.getKeyCode();  //gets the keyCode (an integer) of the key pressed
+        System.out.println("Key Pressed: " + key + "  Code: " + keyCode);
+
+        if(keyCode == 39){ // R arrow
+            airBalloon.dx=5;
+            System.out.println("setting dx to 5");
+        }
+
+        if(keyCode == 37){ // L arrow
+            airBalloon.dx=-5;
+        }
+
+        if(keyCode == 38){ // Up arrow
+            airBalloon.dy=-5;
+        }
+
+        if(keyCode == 40){ // Down arrow
+            airBalloon.dy=5;
+        }
+    }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent event) {
+        char key = event.getKeyChar();
+        int keyCode = event.getKeyCode();
+
+
+        if(keyCode == 39){ // R arrow
+            airBalloon.dx=0;
+        }
+
+        if(keyCode == 37){ // L arrow
+            airBalloon.dx=0;
+        }
+
+        if(keyCode == 38){ // Up arrow
+            airBalloon.dy=0;
+        }
+
+        if(keyCode == 40){ // Down arrow
+            airBalloon.dy=0;
+        }
+
+
+
     }
+
+
     public void pause(int time) {
         //sleep
         try {
@@ -101,11 +182,11 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
         frame = new JFrame("BalloonWorld");   //Create the program window or frame.  Names it.
 
         panel = (JPanel) frame.getContentPane();  //sets up a JPanel which is what goes in the frame
-        panel.setPreferredSize(new Dimension());  //sizes the JPanel
+        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));  //sizes the JPanel
         panel.setLayout(null);   //set the layout
 
         // creates a canvas which is a blank rectangular area of the screen onto which the application can draw
-        // and trap input events
+        // and trap input events (Mouse and Keyboard events)
         canvas = new Canvas();
         canvas.setBounds(0, 0, WIDTH, HEIGHT);
         canvas.setIgnoreRepaint(true);
