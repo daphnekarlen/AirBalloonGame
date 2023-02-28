@@ -10,6 +10,7 @@ public class Obstacles {
     public boolean isAlive;
     public int dx;
     public int dy;
+
     public Rectangle rec;
     public Image pic;
 
@@ -22,13 +23,19 @@ public class Obstacles {
         dx=dxParameter;
         dy=0;
         pic = picParameter;
-        isAlive = true;
+        isAlive = false;
         rec=new Rectangle(xpos, ypos, width, height);
 
 
     }
 
     public void move (){
+        xpos = xpos + dx;
+        ypos = ypos + dy;
+
+
+        rec=new Rectangle(xpos, ypos, width, height);
+
 //        balloon = new int[200];
 //
 //        for (int i = 0; i < balloon.length; i++) {

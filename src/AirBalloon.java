@@ -2,21 +2,23 @@ import java.awt.*;
 
 public class AirBalloon {
 
-    public int xpos;                //the x position
-    public int ypos;                //the y position
+    public double xpos;                //the x position
+    public double ypos;                //the y position
     public int width;
     public int height;
     public boolean isAlive;
-    public int dx;
-    public int dy;
+    public double dx;
+    public double dy;
+//    public double ddx = .1;
+//    public double ddy = .1;
+
     public Rectangle rec;
     public Image pic;
 
-//    //movement booleans
-//    public boolean right;
-//    public boolean down;
-//    public boolean left;
-//    public boolean up;
+    public boolean right;
+    public boolean left;
+    public boolean up;
+    public boolean down;
 
 
 
@@ -24,13 +26,15 @@ public class AirBalloon {
 
         xpos = 300;
         ypos = 200;
-        width = 50;
-        height = 50;
+        width = 100;
+        height = 200;
         dx=dxParameter;
         dy=dyParameter;
+//        ddx = .1;
+
         pic = picParameter;
         isAlive = true;
-        rec=new Rectangle(xpos, ypos, width, height);
+        rec=new Rectangle((int)xpos, (int)ypos, width, height);
 
     }
 
@@ -39,7 +43,24 @@ public class AirBalloon {
         System.out.println("dx = " + dx);
         ypos = ypos+dy;
 
-        rec=new Rectangle(xpos, ypos, width, height);
+        if(right == true){
+            dx=6;
+        }
+
+        if(left == true){
+            dx=-6;
+        }
+
+        if(up == true){
+            dy=-6;
+        }
+
+        if(down == true){
+            dy=6;
+        }
+
+
+        rec=new Rectangle((int)xpos, (int)ypos, width, height);
 
     }
 

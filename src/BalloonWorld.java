@@ -18,8 +18,17 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
     public JPanel panel;
     public Obstacles[] balloon;
     public BufferStrategy bufferStrategy;
-    public AirBalloon airBalloon;
+    public boolean gameStart = false;
 
+    public long startTime;
+    public long currentTime;
+    public long elapsedTime;
+
+    public boolean startTimer;
+
+    public boolean gameEnd = false;
+
+    public AirBalloon airBalloon;
     public Image airBalloonPic;
     public Image balloonPic;
 
@@ -56,9 +65,14 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
     public void run(){
         while(true){
-            moveThings();
-            triggerBalloon();
-            checkIntersections();
+            if(gameStart == true) {
+                triggerBalloon();
+                moveThings();
+                checkIntersections();
+                currentTime = System.currentTimeMillis();
+                elapsedTime = currentTime - startTime; // calculating elapsed time
+            }
+
             render();
             pause(20);
         }
@@ -67,17 +81,21 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
 
 
-    public void moveThings(){
+    public void moveThings() {
         airBalloon.move();
+
+        for (int x = 0; x < balloon.length; x++) {
+            balloon[x].move();
+        }
     }
 
     public void triggerBalloon(){
         for(int x=0; x<balloon.length; x++){
           if(balloon[x].isAlive == false){
               double r = Math.random();
-              if(r>0.99){
+              if(r>0.99999){
                   balloon[x].isAlive = true;
-                  balloon[x].dy = -10;
+                  balloon[x].dy = -8;
               }
           }
 
@@ -93,22 +111,35 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
                 balloon[x].isAlive = false;
             }
         }
-
-
     }
 
     public void render(){
         Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
-        g.drawImage(backgroundPic, 0,0,WIDTH, HEIGHT, null);
-        g.drawImage(airBalloonPic, airBalloon.xpos, airBalloon.ypos, 200, 200, null);
+        if(gameStart == false){
+            g.setColor(Color.BLUE);
+            g.fillRect(0,0, WIDTH, HEIGHT);
+            g.setColor(Color.BLACK);
+            g.setFont(new Font ("TimesRoman", Font.BOLD, 25));
+            g.drawString("WELCOME TO POP BALLOONS", 350,250);
+            g.drawString("Try to collect as many ballons as you can in 1 minute", 350, 300);
+            g.drawString("Press Enter to Start", 350, 350);
+        } // draw start screen
 
-        for(int x=0; x<balloon.length; x++) {
-            g.drawImage(balloon[x].pic, balloon[x].xpos, balloon[x].ypos, balloon[x].width, balloon[x].height, null);
+        else {
+            g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
+            g.drawImage(airBalloonPic, (int) airBalloon.xpos, (int) airBalloon.ypos, airBalloon.width, airBalloon.height, null);
+//        g.drawRect(airBalloon.xpos, airBalloon.ypos, airBalloon.width, airBalloon.height);
+
+            for (int x = 0; x < balloon.length; x++) {
+                if (balloon[x].isAlive == true) {
+                    g.drawImage(balloon[x].pic, balloon[x].xpos, balloon[x].ypos, balloon[x].width, balloon[x].height, null);
+                }
+            }
+            g.drawString(45-elapsedTime/1000+"", 700,50);
+
         }
-
-
         g.dispose();
         bufferStrategy.show();
     }
@@ -120,24 +151,32 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
     public void keyPressed(KeyEvent event) {
         char key = event.getKeyChar();     //gets the character of the key pressed
-        int keyCode = event.getKeyCode();  //gets the keyCode (an integer) of the key pressed
+        int keyCode = event.getKeyCode();//gets the keyCode (an integer) of the key pressed
         System.out.println("Key Pressed: " + key + "  Code: " + keyCode);
 
+        if(keyCode == 10){
+            gameStart = true;
+        }
+
         if(keyCode == 39){ // R arrow
-            airBalloon.dx=5;
+            airBalloon.right = true;
+            airBalloon.dx=6;
             System.out.println("setting dx to 5");
         }
 
         if(keyCode == 37){ // L arrow
-            airBalloon.dx=-5;
+            airBalloon.left = true;
+            airBalloon.dx=-6;
         }
 
         if(keyCode == 38){ // Up arrow
-            airBalloon.dy=-5;
+            airBalloon.up = true;
+            airBalloon.dy=-6;
         }
 
         if(keyCode == 40){ // Down arrow
-            airBalloon.dy=5;
+            airBalloon.down = true;
+            airBalloon.dy=6;
         }
     }
 
@@ -148,18 +187,22 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
 
         if(keyCode == 39){ // R arrow
+            airBalloon.right = false;
             airBalloon.dx=0;
         }
 
         if(keyCode == 37){ // L arrow
+            airBalloon.left = false;
             airBalloon.dx=0;
         }
 
         if(keyCode == 38){ // Up arrow
+            airBalloon.up = false;
             airBalloon.dy=0;
         }
 
         if(keyCode == 40){ // Down arrow
+            airBalloon.down = false;
             airBalloon.dy=0;
         }
 
