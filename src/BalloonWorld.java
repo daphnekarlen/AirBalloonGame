@@ -23,14 +23,17 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
     public long startTime;
     public long currentTime;
     public long elapsedTime;
+    public int timeRemaining;
+
+    public int score;
 
     public boolean startTimer;
-
-    public boolean gameEnd = false;
 
     public AirBalloon airBalloon;
     public Image airBalloonPic;
     public Image balloonPic;
+
+    public Image backgroundPicOne;
 
     public Image backgroundPic;
 
@@ -49,6 +52,7 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
         airBalloonPic = Toolkit.getDefaultToolkit().getImage("airballoon.png");
         airBalloon = new AirBalloon(0,0,airBalloonPic);
+        backgroundPicOne = Toolkit.getDefaultToolkit().getImage("background start pic.jpeg");
 
         balloonPic = Toolkit.getDefaultToolkit().getImage("balloonobstacle.png");
         balloon = new Obstacles[10000];
@@ -69,8 +73,11 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
                 triggerBalloon();
                 moveThings();
                 checkIntersections();
-                currentTime = System.currentTimeMillis();
+                startTimer = true;
+//                startTime = 45;
+                currentTime =  System.currentTimeMillis();
                 elapsedTime = currentTime - startTime; // calculating elapsed time
+                timeRemaining = (int)(45-elapsedTime/1000);
             }
 
             render();
@@ -107,8 +114,13 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
     public void checkIntersections(){
         for(int x=0; x<balloon.length; x++){
-            if(balloon[x].rec.intersects(airBalloon.rec)) {
+            if(balloon[x].rec.intersects(airBalloon.rec) && balloon[x].isCrashing == false) {
                 balloon[x].isAlive = false;
+                score++;
+                balloon[x].isCrashing = true;
+            }
+            if(!balloon[x].rec.intersects(airBalloon.rec)){
+                balloon[x].isCrashing = false;
             }
         }
     }
@@ -118,13 +130,14 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
         if(gameStart == false){
-            g.setColor(Color.BLUE);
-            g.fillRect(0,0, WIDTH, HEIGHT);
-            g.setColor(Color.BLACK);
+            g.drawImage(backgroundPicOne,0,0,WIDTH, HEIGHT, null);
             g.setFont(new Font ("TimesRoman", Font.BOLD, 25));
             g.drawString("WELCOME TO POP BALLOONS", 350,250);
             g.drawString("Try to collect as many ballons as you can in 1 minute", 350, 300);
             g.drawString("Press Enter to Start", 350, 350);
+            startTimer = false;
+            score = 0;
+            g.setFont(new Font ("TimesRoman", Font.BOLD, 25));
         } // draw start screen
 
         else {
@@ -132,13 +145,23 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
             g.drawImage(airBalloonPic, (int) airBalloon.xpos, (int) airBalloon.ypos, airBalloon.width, airBalloon.height, null);
 //        g.drawRect(airBalloon.xpos, airBalloon.ypos, airBalloon.width, airBalloon.height);
 
+            g.drawString(score + "", 900,50);
+            g.setFont(new Font ("TimesRoman", Font.BOLD, 25));
+
             for (int x = 0; x < balloon.length; x++) {
                 if (balloon[x].isAlive == true) {
                     g.drawImage(balloon[x].pic, balloon[x].xpos, balloon[x].ypos, balloon[x].width, balloon[x].height, null);
                 }
             }
-            g.drawString(45-elapsedTime/1000+"", 700,50);
+            g.drawString(timeRemaining + "", 700, 50);
 
+            if (timeRemaining == 0) {
+                gameStart = false;
+                g.drawString(score+"",900,50);
+                for (int x = 0; x < balloon.length; x++) {
+                    balloon[x].isAlive = false;
+                }
+            }
         }
         g.dispose();
         bufferStrategy.show();
@@ -156,6 +179,8 @@ public class BalloonWorld implements Runnable, KeyListener, MouseListener {
 
         if(keyCode == 10){
             gameStart = true;
+            startTime = System.currentTimeMillis();
+
         }
 
         if(keyCode == 39){ // R arrow

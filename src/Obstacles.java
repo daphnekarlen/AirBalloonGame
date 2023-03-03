@@ -14,6 +14,8 @@ public class Obstacles {
     public Rectangle rec;
     public Image pic;
 
+    public boolean isCrashing;
+
     public Obstacles (int pXpos, int pYpos, int dxParameter, int dyParameter, Image picParameter){
 
         xpos = pXpos;
@@ -25,6 +27,7 @@ public class Obstacles {
         pic = picParameter;
         isAlive = false;
         rec=new Rectangle(xpos, ypos, width, height);
+        isCrashing = false;
 
 
     }
