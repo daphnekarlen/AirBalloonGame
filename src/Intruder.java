@@ -1,7 +1,6 @@
 import java.awt.*;
 
-public class Obstacles {
-
+public class Intruder {
 
     public int xpos;                //the x position
     public int ypos;                //the y position
@@ -16,7 +15,7 @@ public class Obstacles {
 
     public boolean isCrashing;
 
-    public Obstacles (int pXpos, int pYpos, int dxParameter, int dyParameter, Image picParameter){
+    public Intruder (int pXpos, int pYpos, int dxParameter, int dyParameter, Image picParameter){
 
         xpos = pXpos;
         ypos = pYpos;
@@ -36,16 +35,8 @@ public class Obstacles {
         xpos = xpos + dx;
         ypos = ypos + dy;
 
-
         rec=new Rectangle(xpos, ypos, width, height);
 
-//        balloon = new int[200];
-//
-//        for (int i = 0; i < balloon.length; i++) {
-//            balloon[i] = (int) (Math.random() * 100);
-//        }
-
-        }
-
-
     }
+
+}

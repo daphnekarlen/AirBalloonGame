@@ -9,8 +9,6 @@ public class AirBalloon {
     public boolean isAlive;
     public double dx;
     public double dy;
-//    public double ddx = .1;
-//    public double ddy = .1;
 
     public Rectangle rec;
     public Image pic;
@@ -30,7 +28,6 @@ public class AirBalloon {
         height = 200;
         dx=dxParameter;
         dy=dyParameter;
-//        ddx = .1;
 
         pic = picParameter;
         isAlive = true;
@@ -43,19 +40,19 @@ public class AirBalloon {
         System.out.println("dx = " + dx);
         ypos = ypos+dy;
 
-        if(right == true){
+        if(right == true){ // moves air balloon R
             dx=6;
         }
 
-        if(left == true){
+        if(left == true){ // moves air balloon L
             dx=-6;
         }
 
-        if(up == true){
+        if(up == true){ // moves air balloon Up
             dy=-6;
         }
 
-        if(down == true){
+        if(down == true){ // moves air balloon Down
             dy=6;
         }
 
